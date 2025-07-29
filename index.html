@@ -3,19 +3,20 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Product Display with Minimalistic Background</title>
+  <title>Upload Product Image - Minimalistic Background</title>
   <style>
-    /* Reset & base */
     body, html {
       margin: 0; padding: 0; height: 100%;
       background: #f0f0f0;
       display: flex;
+      flex-direction: column;
       justify-content: center;
       align-items: center;
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      gap: 20px;
+      user-select: none;
     }
 
-    /* Background container */
     #background-canvas {
       position: relative;
       width: 600px;
@@ -28,7 +29,6 @@
       overflow: visible;
     }
 
-    /* Matte white floor */
     #floor {
       position: absolute;
       bottom: 0;
@@ -44,7 +44,6 @@
       z-index: 1;
     }
 
-    /* Soft ambient spotlight */
     #spotlight {
       position: absolute;
       top: 0; left: 50%;
@@ -71,7 +70,7 @@
     /* Product image styling */
     #product-image {
       position: absolute;
-      bottom: 130px; /* Just above the floor */
+      bottom: 130px;
       left: 50%;
       transform: translateX(-50%);
       max-height: 220px;
@@ -80,29 +79,84 @@
       user-select: none;
       transition: transform 0.3s ease;
       cursor: pointer;
+      display: none; /* hidden initially */
+      object-fit: contain;
+      max-width: 90%;
     }
 
     #product-image:hover {
       transform: translateX(-50%) scale(1.05);
       filter: drop-shadow(0 8px 10px rgba(0,0,0,0.15));
     }
+
+    /* Upload button styling */
+    #upload-label {
+      background-color: #1e293b;
+      color: white;
+      padding: 12px 24px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 600;
+      box-shadow: 0 5px 15px rgba(30, 41, 59, 0.3);
+      user-select: none;
+      transition: background-color 0.3s ease;
+    }
+
+    #upload-label:hover {
+      background-color: #3b4a6b;
+    }
+
+    #upload-input {
+      display: none;
+    }
+
+    /* Responsive scaling for smaller screens */
+    @media (max-width: 640px) {
+      #background-canvas {
+        width: 90vw;
+        height: 60vw;
+      }
+      #product-image {
+        max-height: 40vw;
+      }
+    }
   </style>
 </head>
 <body>
 
+  <label for="upload-input" id="upload-label">Upload Your Product Image</label>
+  <input type="file" accept="image/*" id="upload-input" />
+
   <div id="background-canvas">
     <div id="spotlight"></div>
     <div id="floor"></div>
-
-    <!-- Replace the src below with your actual product image URL -->
-    <img
-      id="product-image"
-      src="https://i.imgur.com/9QZTzXh.png"
-      alt="Motorcycle Brake Pad"
-      draggable="false"
-      loading="lazy"
-    />
+    <img id="product-image" alt="Uploaded Product" />
   </div>
+
+  <script>
+    const uploadInput = document.getElementById('upload-input');
+    const productImage = document.getElementById('product-image');
+
+    uploadInput.addEventListener('change', (event) => {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      if (!file.type.startsWith('image/')) {
+        alert('Please upload a valid image file.');
+        return;
+      }
+
+      // Create a local URL for the uploaded image and set it as the src
+      const imageURL = URL.createObjectURL(file);
+      productImage.src = imageURL;
+      productImage.style.display = 'block';
+
+      // Optional: Revoke the object URL after image loads for memory efficiency
+      productImage.onload = () => {
+        URL.revokeObjectURL(imageURL);
+      };
+    });
+  </script>
 
 </body>
 </html>
