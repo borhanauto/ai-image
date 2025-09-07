@@ -1,87 +1,269 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>AI Image Editor & Generator</title>
-  <style>
-    body { font-family: Arial, sans-serif; padding: 20px; max-width: 600px; margin: auto; }
-    input, textarea, button { width: 100%; margin-bottom: 10px; padding: 10px; font-size: 16px; }
-    img { max-width: 100%; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.15); }
-    #download-link { display: block; margin-top: 10px; }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Borhan Auto Parts Centre - Motorcycle Spare Parts Jessore</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+* { margin:0; padding:0; box-sizing:border-box; font-family: 'Inter', sans-serif; }
+body { background: #f0f8ff; color:#111; min-height:100vh; transition:0.3s; }
+.container { max-width:1300px; margin:0 auto; padding:2rem; }
+h1,h2,h3 { margin-bottom:1rem; }
+h1 { font-size:3rem; text-align:center; color:#1e3a8a; margin-bottom:2rem; animation:fadeIn 1s ease; }
+#searchBar { width:100%; max-width:400px; padding:0.5rem 1rem; border-radius:10px; border:1px solid #ccc; margin:1rem auto 2rem; display:block; transition:0.3s; }
+.brands, .models, .categories, .products { display:flex; flex-wrap:wrap; gap:1.5rem; justify-content:center; }
+.card { background:white; border-radius:16px; padding:1.5rem; flex:1 1 220px; max-width:250px; text-align:center; box-shadow:0 8px 25px rgba(0,0,0,0.1); transition:0.4s; cursor:pointer; position:relative; overflow:hidden; animation:fadeIn 0.5s ease; }
+.card::before { content:""; position:absolute; top:0; left:0; width:100%; height:100%; background:linear-gradient(45deg,#2563eb,#4f46e5); opacity:0; transition:0.4s; border-radius:16px; }
+.card:hover::before { opacity:0.1; }
+.card:hover { transform:translateY(-8px) scale(1.03); box-shadow:0 15px 35px rgba(0,0,0,0.15); }
+.card img { width:100%; height:150px; object-fit:contain; margin-bottom:0.5rem; }
+.card p { font-weight:600; margin-top:0.5rem; color:#1f2937; }
+button, .whatsapp-btn { padding:0.75rem 1.5rem; border:none; border-radius:10px; cursor:pointer; font-weight:600; transition:0.3s; text-decoration:none; display:inline-block; font-size:1rem; }
+button:hover, .whatsapp-btn:hover { opacity:0.9; }
+button { background:#2563eb; color:white; }
+.whatsapp-btn { background:#25D366; color:white; }
+.hidden { display:none; }
+.back-btn { position:fixed; top:20px; left:20px; z-index:9999; background:#f3f4f6; color:#111; padding:0.5rem 1rem; border-radius:10px; border:none; cursor:pointer; transition:0.3s; display:none; }
+.back-btn:hover { background:#e5e7eb; }
+#productDetail { background:white; padding:2rem; border-radius:16px; box-shadow:0 8px 25px rgba(0,0,0,0.1); text-align:center; animation:fadeIn 0.5s ease; }
+#productDetail h2 { color:#2563eb; font-size:2rem; margin-bottom:1rem; }
+#productDetail p { margin-bottom:1rem; font-size:1rem; line-height:1.5; }
+.contact { text-align:center; margin-top:3rem; font-size:0.95rem; color:#333; }
+.contact a { color:#2563eb; text-decoration:none; margin:0 0.5rem; }
+.hero { text-align:center; margin-bottom:3rem; animation:fadeIn 1s ease; }
+.hero img { width:100%; max-width:600px; border-radius:16px; }
+@keyframes fadeIn { from {opacity:0; transform:translateY(10px);} to {opacity:1; transform:translateY(0);} }
+@media(max-width:768px){.card{flex:1 1 45%;}.hero img{max-width:100%;}}
+@media(max-width:480px){.card{flex:1 1 100%;}}
+</style>
 </head>
 <body>
-  <h1>Upload and AI-Edit Your Image</h1>
 
-  <input type="file" id="upload" accept="image/*" />
-  <textarea id="prompt" placeholder="Describe how you want to edit or recreate your image" rows="3"></textarea>
-  <button id="generate">Generate AI Image</button>
+<div class="container">
+  <div class="hero">
+    <img src="https://via.placeholder.com/600x200?text=Borhan+Auto+Parts+Centre" alt="Borhan Auto Parts Centre">
+    <h1>Borhan Auto Parts Centre</h1>
+    <p>Genuine motorcycle spare parts - RN Road, Jessore</p>
+  </div>
 
-  <h2>Uploaded Image Preview</h2>
-  <img id="preview" src="" alt="Upload preview" />
+  <input type="text" id="searchBar" placeholder="Search brands, models, categories, or products..." oninput="searchItems()">
+  <button class="back-btn" id="backBtn" onclick="goBack()">Back</button>
 
-  <h2>AI Edited Image Result</h2>
-  <img id="result" src="" alt="Result" />
-  <a id="download-link" href="#" download="ai-edited-image.png" style="display:none;">Download Edited Image</a>
+  <!-- Pages -->
+  <div id="homePage">
+    <h2 style="text-align:center; margin-bottom:1.5rem;">Select Your Brand</h2>
+    <div class="brands" id="brandList"></div>
+  </div>
 
-  <script>
-    const uploadInput = document.getElementById('upload');
-    const preview = document.getElementById('preview');
-    const result = document.getElementById('result');
-    const promptInput = document.getElementById('prompt');
-    const generateBtn = document.getElementById('generate');
-    const downloadLink = document.getElementById('download-link');
+  <div id="modelPage" class="hidden">
+    <h2 id="brandTitle" style="text-align:center; margin-bottom:1.5rem;"></h2>
+    <div class="models" id="modelList"></div>
+  </div>
 
-    let uploadedFile;
+  <div id="categoryPage" class="hidden">
+    <h2 id="modelTitle" style="text-align:center; margin-bottom:1.5rem;"></h2>
+    <div class="categories" id="categoryList"></div>
+  </div>
 
-    uploadInput.addEventListener('change', e => {
-      const file = e.target.files[0];
-      if (!file) return;
-      uploadedFile = file;
-      preview.src = URL.createObjectURL(file);
-      result.src = '';
-      downloadLink.style.display = 'none';
+  <div id="productPage" class="hidden">
+    <div id="productDetail"></div>
+  </div>
+
+  <div class="contact">
+    <p>Contact: <a href="tel:+8801983498274">01983498274</a> | Email: <a href="mailto:borhanautoparts@gmail.com">borhanautoparts@gmail.com</a></p>
+    <p>Address: RN Road, Jessore, Bangladesh</p>
+  </div>
+</div>
+
+<!-- Replace this part in your existing script -->
+<script>
+const phone = "8801983498274";
+let selectedBrand = "";
+let selectedModel = "";
+let currentPage = "home";
+
+// ✅ Updated brand logos with real image URLs
+const brands = [
+  {name:"Bajaj", logo:"https://upload.wikimedia.org/wikipedia/en/9/9e/Bajaj_Auto_logo.png"},
+  {name:"Yamaha", logo:"https://github.com/borhanauto/borhan-auto-jsr/blob/main/yamaha.png"},
+  {name:"Suzuki", logo:"https://upload.wikimedia.org/wikipedia/commons/thumb/3/32/Suzuki_logo_2.svg/512px-Suzuki_logo_2.svg.png"},
+  {name:"Honda", logo:"https://upload.wikimedia.org/wikipedia/commons/thumb/9/9e/Honda_logo.svg/512px-Honda_logo.svg.png"},
+  {name:"TVS", logo:"https://upload.wikimedia.org/wikipedia/commons/thumb/e/ea/TVS_Motor_Company_logo.svg/512px-TVS_Motor_Company_logo.svg.png"},
+  {name:"Hero", logo:"https://upload.wikimedia.org/wikipedia/commons/thumb/d/d8/Hero_MotoCorp_logo.svg/512px-Hero_MotoCorp_logo.svg.png"},
+  {name:"Pricol", logo:"https://via.placeholder.com/150?text=Pricol"},
+  {name:"Varroc", logo:"https://via.placeholder.com/150?text=Varroc"},
+  {name:"Lumax", logo:"https://via.placeholder.com/150?text=Lumax"},
+  {name:"Fiemme", logo:"https://via.placeholder.com/150?text=Fiemme"},
+  {name:"Karol", logo:"https://via.placeholder.com/150?text=Karol"}
+];
+
+const modelsByBrand = {
+  Bajaj:["Pulsar 150","Dominar 400","CT100"],
+  Yamaha:["FZS","R15","MT15"],
+  Suzuki:["Gixxer","Hayate","Access 125"],
+  Honda:["CBR150R","CB Shine","Activa"],
+  TVS:["Apache","Jupiter","NTORQ"],
+  Hero:["Splendor","Xtreme","HF Deluxe"],
+  Pricol:["Model A","Model B"],
+  Varroc:["Model X","Model Y"],
+  Lumax:["Model L1","Model L2"],
+  Fiemme:["Model F1","Model F2"],
+  Karol:["Model K1","Model K2"]
+};
+
+const categories = ["Fuel","Clutch","Engine","Throttle","Chain Kits"];
+
+const products = {
+  "Pulsar 150_Fuel": {name:"Pulsar 150 Fuel Tank", description:"High-quality fuel tank.", price:"৳3,500", img:"https://via.placeholder.com/250x150?text=Fuel"},
+  "Pulsar 150_Clutch": {name:"Pulsar 150 Clutch Cable", description:"Durable clutch cable.", price:"৳1,200", img:"https://via.placeholder.com/250x150?text=Clutch"},
+  "Dominar 400_Fuel": {name:"Dominar 400 Fuel Tank", description:"High-quality fuel tank.", price:"৳3,800", img:"https://via.placeholder.com/250x150?text=Fuel"}
+};
+
+const backBtn = document.getElementById("backBtn");
+
+// ✅ Brand card only shows logo image (no brand name text)
+function initBrands() {
+  const brandList = document.getElementById("brandList");
+  brandList.innerHTML = "";
+  brands.forEach(b => {
+    const card = document.createElement("div");
+    card.className = "card";
+    card.innerHTML = `<img src="${b.logo}" alt="${b.name}" title="${b.name}">`;
+    card.onclick = () => selectBrand(b.name);
+    brandList.appendChild(card);
+  });
+}
+initBrands();
+
+function showBackBtn(show) { backBtn.style.display = show ? "block" : "none"; }
+
+function selectBrand(brand) {
+  selectedBrand = brand;
+  currentPage = "model";
+  document.getElementById("homePage").classList.add("hidden");
+  const modelList = document.getElementById("modelList");
+  document.getElementById("brandTitle").innerText = `Select Model for ${brand}`;
+  modelList.innerHTML = "";
+  modelsByBrand[brand].forEach(m => {
+    const card = document.createElement("div");
+    card.className = "card";
+    card.innerHTML = `<h3>${m}</h3>`;
+    card.onclick = () => selectModel(m);
+    modelList.appendChild(card);
+  });
+  document.getElementById("modelPage").classList.remove("hidden");
+  showBackBtn(true);
+}
+
+function selectModel(model) {
+  selectedModel = model;
+  currentPage = "category";
+  document.getElementById("modelPage").classList.add("hidden");
+  const categoryList = document.getElementById("categoryList");
+  document.getElementById("modelTitle").innerText = `Select Category for ${model}`;
+  categoryList.innerHTML = "";
+  categories.forEach(cat => {
+    const card = document.createElement("div");
+    card.className = "card";
+    card.innerHTML = `<h3>${cat}</h3>`;
+    card.onclick = () => showProduct(model, cat);
+    categoryList.appendChild(card);
+  });
+  document.getElementById("categoryPage").classList.remove("hidden");
+}
+
+function showProduct(model, category) {
+  currentPage = "product";
+  const key = `${model}_${category}`;
+  const product = products[key] || {name:`${model} ${category}`, description:`Product details coming soon.`, price:"Contact for Price", img:"https://via.placeholder.com/250x150?text=Product"};
+  const message = encodeURIComponent(`Hello, I want to buy: ${product.name}`);
+  document.getElementById("productDetail").innerHTML = `
+    <img src="${product.img}" alt="${product.name}" style="width:100%; max-width:300px; margin-bottom:1rem;">
+    <h2>${product.name}</h2>
+    <p>${product.description}</p>
+    <p style="font-weight:600; font-size:1.2rem;">Price: ${product.price}</p>
+    <a href="https://wa.me/${phone}?text=${message}" target="_blank" class="whatsapp-btn">Buy via WhatsApp</a>
+  `;
+  document.getElementById("categoryPage").classList.add("hidden");
+  document.getElementById("productPage").classList.remove("hidden");
+}
+
+function goBack() {
+  if(currentPage === "product") {
+    currentPage = "category";
+    document.getElementById("productPage").classList.add("hidden");
+    document.getElementById("categoryPage").classList.remove("hidden");
+  } else if(currentPage === "category") {
+    currentPage = "model";
+    document.getElementById("categoryPage").classList.add("hidden");
+    document.getElementById("modelPage").classList.remove("hidden");
+  } else if(currentPage === "model") {
+    currentPage = "home";
+    document.getElementById("modelPage").classList.add("hidden");
+    document.getElementById("homePage").classList.remove("hidden");
+    selectedBrand = "";
+    showBackBtn(false);
+  }
+}
+
+// Search function remains unchanged
+function searchItems() {
+  const query = document.getElementById("searchBar").value.toLowerCase();
+
+  if(currentPage === "home") {
+    const brandList = document.getElementById("brandList");
+    brandList.innerHTML = "";
+    brands.filter(b => b.name.toLowerCase().includes(query)).forEach(b => {
+      const card = document.createElement("div");
+      card.className = "card";
+      card.innerHTML = `<img src="${b.logo}" alt="${b.name}" title="${b.name}">`;
+      card.onclick = () => selectBrand(b.name);
+      brandList.appendChild(card);
+    });
+  } else if(currentPage === "model") {
+    const modelList = document.getElementById("modelList");
+    modelList.innerHTML = "";
+    modelsByBrand[selectedBrand].filter(m => 
+      m.toLowerCase().includes(query) || 
+      Object.keys(products).some(p => p.toLowerCase().includes(query) && p.startsWith(m))
+    ).forEach(m => {
+      const card = document.createElement("div");
+      card.className = "card";
+      card.innerHTML = `<h3>${m}</h3>`;
+      card.onclick = () => selectModel(m);
+      modelList.appendChild(card);
+    });
+  } else if(currentPage === "category") {
+    const categoryList = document.getElementById("categoryList");
+    categoryList.innerHTML = "";
+    categories.filter(cat => 
+      cat.toLowerCase().includes(query) || 
+      Object.keys(products).some(p => p.toLowerCase().includes(query) && p.startsWith(selectedModel))
+    ).forEach(cat => {
+      const card = document.createElement("div");
+      card.className = "card";
+      card.innerHTML = `<h3>${cat}</h3>`;
+      card.onclick = () => showProduct(selectedModel, cat);
+      categoryList.appendChild(card);
     });
 
-    generateBtn.addEventListener('click', async () => {
-      if (!uploadedFile) {
-        alert('Please upload an image first.');
-        return;
-      }
-      if (!promptInput.value.trim()) {
-        alert('Please enter a prompt describing the edit.');
-        return;
-      }
-
-      generateBtn.disabled = true;
-      generateBtn.textContent = 'Generating...';
-
-      try {
-        const formData = new FormData();
-        formData.append('image', uploadedFile);
-        formData.append('prompt', promptInput.value.trim());
-
-        const response = await fetch('/api/edit-image', {
-          method: 'POST',
-          body: formData
-        });
-
-        if (!response.ok) throw new Error('Failed to generate image');
-
-        const data = await response.json();
-
-        result.src = data.editedImageUrl;
-        downloadLink.href = data.editedImageUrl;
-        downloadLink.style.display = 'inline';
-
-      } catch (error) {
-        alert('Error: ' + error.message);
-      } finally {
-        generateBtn.disabled = false;
-        generateBtn.textContent = 'Generate AI Image';
-      }
+    Object.entries(products).filter(([key, prod]) =>
+      key.startsWith(selectedModel) && prod.name.toLowerCase().includes(query)
+    ).forEach(([key, prod]) => {
+      const card = document.createElement("div");
+      card.className = "card";
+      card.innerHTML = `<h3>${prod.name}</h3>`;
+      card.onclick = () => {
+        const parts = key.split("_");
+        showProduct(parts[0], parts[1]);
+      };
+      categoryList.appendChild(card);
     });
-  </script>
+  }
+}
+</script>
+
+
 </body>
 </html>
